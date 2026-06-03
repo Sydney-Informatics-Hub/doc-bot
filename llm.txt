@@ -1,0 +1,214 @@
+# Australian BioCommons How-to Guide Template
+
+This repository is a GitHub template for creating bioinformatics How-to Guide websites. It is maintained by Australian BioCommons and used by researchers and bioinformaticians across Australian national compute infrastructure (Galaxy Australia, NCI Gadi, Pawsey Setonix, etc.).
+
+Guides are deployed as GitHub Pages sites using the ELIXIR Toolkit theme.
+
+## Purpose
+
+The template provides a standard structure for documenting bioinformatics tools, workflows, and their use on Australian HPC and cloud infrastructure. The goal is to:
+
+- Reduce the time researchers spend creating documentation
+- Ensure guides follow a consistent, reusable structure
+- Enable DOI minting via Zenodo for citable research outputs
+- Support linking to registries: WorkflowHub, bio.tools, TeSS (ELIXIR training)
+
+## Repository structure
+
+| Path | Purpose |
+|------|---------|
+| `index.md` | Main landing page / single-page guide content |
+| `about.md` | Citation, acknowledgements, references |
+| `pages/` | Additional content pages for multi-page guides |
+| `images/` | Screenshots and figures used in the guide |
+| `_data/sidebars/main.yml` | Navigation sidebar configuration |
+| `_data/affiliations.yml` | Institutional affiliations metadata |
+| `_data/CONTRIBUTORS.yml` | List of contributors with ORCID and GitHub handles |
+| `_config.yml` | Jekyll configuration: title, remote theme, metadata |
+| `CITATION.CFF` | Citation metadata in Citation File Format |
+| `contributors.md` | Auto-generated contributors page |
+| `README.md` | GitHub repository description |
+
+## Guide content conventions
+
+### Frontmatter (every .md page)
+
+```yaml
+---
+title: <Page title shown in browser tab and nav>
+description: <One sentence description used in meta tags>
+---
+```
+
+### Standard page sections (in order)
+
+1. **Introduction**: 1–3 paragraphs describing what the guide covers, what tool/workflow/platform it documents, and which infrastructure it targets. Mention any relevant BioCommons or Bioplatforms Australia programmes (e.g. Threatened Species Initiative).
+
+2. **Quick start guide**: A numbered checklist of the minimum steps to get from zero to a working result. Each item links to the relevant in-depth section below.
+
+3. **How to cite**: Citation block(s) for any workflows referenced, in the format:
+   > Author(s). (Year). **Workflow name vX.Y**. WorkflowHub. https://doi.org/...
+
+4. **The overall workflow**: A figure (Fig 1) showing the end-to-end process, followed by a markdown table with columns: Process name | Workflow name | Description | Inputs | Outputs.
+
+5. **In-depth workflow guide**: Step-by-step instructions with numbered steps, screenshots referenced as `![](images/...)` with figure captions, and callout boxes for notes, warnings, and tips (using `> **Note:**`, `> **Warning:**`, `> **Tip:**`).
+
+6. **Acknowledgements**: Standard BioCommons acknowledgement text and links to funding bodies.
+
+7. **References**: Numbered or linked references to tools, papers, and databases.
+
+### Writing style
+
+- Use second person ("you", "your") throughout
+- Steps are imperative: "Click the Upload button", "Select your BAM file"
+- Screenshots are mandatory for UI-based steps; reference as Fig N in bold
+- Notes/warnings/tips use blockquote callout syntax
+- Tool names are in backticks: `hifiasm`, `hifiasm`, `MetaPhlAn2`
+- Workflow names are bolded on first mention
+- Links to Galaxy Australia, NCI, Pawsey, Bioplatforms data portal, WorkflowHub, TeSS, and bio.tools registries should be included wherever relevant
+
+### Callout syntax
+
+```markdown
+> **Note:** Use this for supplementary information the user should be aware of.
+
+> **Warning:** Use this for important caveats that could cause errors or data loss.
+
+> **Tip:** Use this for shortcuts, FAQs, or helpful context.
+
+> **Important:** Use this for prerequisite or dependency information.
+```
+
+### Figure syntax
+
+```markdown
+![](images/<guide_name>/<descriptive_filename>.png)
+
+*Fig N. Caption describing what the screenshot shows and why it is relevant.*
+```
+
+### Tables
+
+Use markdown tables for: process summaries, file/directory listings, input/output descriptions, and tool comparisons.
+
+## Infrastructure platforms commonly documented
+
+- **Galaxy Australia** (usegalaxy.org.au): browser-based workflow platform
+- **NCI Gadi**: national HPC (PBS Pro scheduler, project allocation model, kSU billing)
+- **Pawsey Setonix**: national HPC (Slurm scheduler, GCD/MI250X GPU nodes)
+- **Australian Nextflow Seqera Service**: managed Nextflow Tower for workflow orchestration
+- **Bioplatforms Australia Data Portal**: genomics data repository with time-limited download URLs
+
+## Existing guide categories and examples
+
+### Genome assembly
+- HiFi genome assembly with `hifiasm` on Galaxy Australia
+- Genome scaffolding with Hi-C on Galaxy Australia
+- Assessing genome assembly quality (BUSCO, Merqury)
+
+### Genome annotation
+- Genome annotation with FgenesH++
+- Transcriptome alignment
+
+### Metagenomics
+- Shotgun metagenomics with MetaPhlAn2 and HUMAnN2 on Galaxy Australia
+- ONTViSc pipeline on HPC using Australian Nextflow Seqera Service
+
+### Transcriptomics
+- scRNA-seq workflows (Scanpy-based) on Galaxy Australia
+- Spatial transcriptomics how-tos (in-situ single-cell spatial RNA)
+
+### Population genomics
+- Stacks RADseq workflows on Galaxy Australia
+
+### Structural biology
+- AlphaFold2 structure prediction on HPC
+- Best practices for presenting AlphaFold models in publications
+
+### Documentation
+- How-to create a How-to Guide (meta-guide)
+- Australian BioCommons documentation guidelines
+
+## Registries and external resources to link
+
+| Registry | URL | Use |
+|----------|-----|-----|
+| WorkflowHub | workflowhub.eu | Cite and link workflow versions with DOI |
+| bio.tools | bio.tools | Link tool entries for any software mentioned |
+| TeSS | tess.elixir-europe.org | Link training materials for topics covered |
+| Zenodo | zenodo.org | DOI minting for guide releases via GitHub integration |
+
+## Contributor metadata format
+
+`_data/CONTRIBUTORS.yml` entry format:
+```yaml
+- name: Georgina Samaha
+  github: georgiesamaha
+  orcid: 0000-0003-0419-1476
+  affiliation: University of Sydney
+```
+
+`_data/affiliations.yml` maps short institution keys to full names and logos used in the contributors page.
+
+## Deployment
+
+Guides are deployed via GitHub Pages using a remote ELIXIR Toolkit Jekyll theme defined in `_config.yml`:
+```yaml
+remote_theme: ELIXIR-Belgium/elixir-toolkit-theme@<version>
+```
+
+The top navigation bar is configured in `_config.yml`. The left sidebar is configured in `_data/sidebars/main.yml` for multi-page guides.
+
+## AI assistant guidance for documentation authors
+
+When helping a developer write or extend a guide in this template, you should:
+
+1. **Ask for the tool/workflow name and target platform** before generating content. The platform (Galaxy Australia vs HPC vs Seqera) determines the structure and required screenshots.
+
+2. **Generate a Quick Start checklist first** as the skeleton. This forces the author to identify all the steps before writing prose.
+
+3. **Propose a workflow table** (Process | Workflow | Description | Inputs | Outputs) early — this is the hardest section for authors to write and the most structurally important.
+
+4. **Always include registry links** — prompt the author to supply WorkflowHub DOIs, bio.tools entries, and TeSS search links for every tool and workflow mentioned. Do not invent or guess DOIs or registry IDs; insert a clearly labelled placeholder and ask the author to supply the real value:
+   ```
+   [WorkflowHub DOI: AUTHOR TO SUPPLY - e.g. https://doi.org/10.48546/WORKFLOWHUB.WORKFLOW.XXX.Y]
+   ```
+
+5. **Suggest figure placeholders** — authors frequently omit screenshots. Insert `![](images/SCREENSHOT_NEEDED.png)` with a caption describing what should be captured.
+
+6. **Prompt for CITATION.CFF** — ensure the author provides: title, authors with ORCID, version, DOI (once minted), repository URL, and licence.
+
+7. **Apply BioCommons tone** — second person, imperative steps, numbered lists for procedures, callout boxes for caveats. Avoid passive voice and jargon-heavy intros.
+
+8. **Remind authors about acknowledgement text** — all guides must acknowledge NCRIS/Australian BioCommons funding. Suggest the standard text:
+   > "The authors acknowledge the support of Australian BioCommons which is enabled by NCRIS via Bioplatforms Australia funding."
+
+9. **Write directly in markdown** — do not suggest or produce content in Google Docs, Word, or any other word processor format. All guide content should be authored as `.md` files from the start. Conversion from word processors introduces formatting errors and requires an extra manual step. If an author shares content in a non-markdown format, help them convert it cleanly before proceeding.
+
+### Closing checklist
+
+At the end of any guide-writing session, run the following review and flag anything missing or incomplete before the author considers the guide done:
+
+- [ ] Quick Start checklist present and all steps link to in-depth sections
+- [ ] Overall workflow figure (Fig 1) present, or placeholder inserted with capture instructions
+- [ ] Workflow summary table present (Process | Workflow | Description | Inputs | Outputs)
+- [ ] How to cite section present with WorkflowHub DOI citation block for every workflow
+- [ ] bio.tools link included for every tool mentioned
+- [ ] TeSS training link included for the topic area
+- [ ] Callout boxes use correct blockquote syntax (`> **Note:**`, `> **Warning:**`, `> **Tip:**`, `> **Important:**`)
+- [ ] All code blocks have a language identifier (` ```bash `, ` ```yaml `, ` ```groovy `, etc.)
+- [ ] All figures have captions in the format `*Fig N. Caption.*`
+- [ ] NCRIS/BioCommons acknowledgement text present in Acknowledgements section
+- [ ] CITATION.CFF populated with title, authors, ORCID, version, licence, and repository URL
+- [ ] CONTRIBUTORS.yml entries added for all authors
+- [ ] `_config.yml` title and description updated from template defaults
+- [ ] No registry DOIs or IDs are placeholders — all real values supplied by the author
+
+## Related repositories and resources
+
+- How-to Hub (guide index): https://australianbiocommons.github.io/how-to-hub/
+- Guide template (this repo): https://github.com/AustralianBioCommons/guide-template
+- Documentation guidelines: https://github.com/AustralianBioCommons/doc_guidelines
+- How-to create a guide: https://australianbiocommons.github.io/how-to-guide-template/
+- ELIXIR Toolkit Theme: https://elixir-belgium.github.io/elixir-toolkit-theme/
+- BioShell (bioinformatics platform): https://github.com/AustralianBioCommons/BioShell
