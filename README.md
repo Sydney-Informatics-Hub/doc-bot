@@ -40,10 +40,6 @@ Full session guidance, multi-session workflow, troubleshooting, and AI limitatio
 | Flag missing sections via the closing checklist | Look up current platform docs. Paste relevant excerpts into the session if needed |
 | Convert existing drafts to BioCommons template format | Look up ORCID or GitHub handles. Supply these yourself |
 
-## Roadmap
-
-This repo is currently in a testing phase. The intended next step is to convert `llm.txt` and `GUIDE_CONTEXT.md` into an MCP server so that guide conventions are injected into the AI context automatically, without manual pasting.
-
 ## Related resources
 
 - [BioCommons guide template](https://australianbiocommons.github.io/how-to-guide-template/)
