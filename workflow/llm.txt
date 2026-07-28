@@ -1,0 +1,283 @@
+# Sydney Informatics Hub Nextflow DSL2 Workflow Documentation
+
+This file describes the conventions for documenting a Nextflow DSL2 workflow built from the Sydney Informatics Hub (SIH) Nextflow DSL2 template. It is maintained by the Sydney Informatics Hub, a Core Research Facility of the University of Sydney, in partnership with Australian BioCommons.
+
+Workflows built from this template are documented primarily in the repository `README.md`, supplemented by per-directory `README.md` files and inline code comments.
+
+## Purpose
+
+The template provides a standard, modular scaffold for Nextflow DSL2 workflows intended to run reproducibly across Australian national compute infrastructure (NCI Gadi, Pawsey Setonix, Pawsey Nimbus) and local systems. The documentation goal is to:
+
+- Let a new user run the workflow end-to-end without reading the source code
+- Make every parameter, input column, output file, and compute profile discoverable
+- Support citation and reuse via WorkflowHub, Zenodo, bio.tools and DOIs
+- Record real benchmarking data so users can request the right allocation
+
+Source template: https://github.com/Sydney-Informatics-Hub/Nextflow_DSL2_template/tree/dev/%7B%7Bcookiecutter.app_name%7D%7D
+Template generator: https://github.com/Sydney-Informatics-Hub/template-nf
+Template user guide: https://sydney-informatics-hub.github.io/template-nf-guide/
+Underlying documentation standard: https://github.com/AustralianBioCommons/doc_guidelines
+
+## Repository structure
+
+| Path | Purpose | Documentation obligation |
+|------|---------|--------------------------|
+| `main.nf` | Entry point: includes, channel definitions, workflow block, `printInfo()`, `helpMessage()` | The `helpMessage()` text must list the same required/optional parameters as the README |
+| `nextflow.config` | `manifest` block, default `params`, reports, `profiles`, `plugins` | Source of truth for default parameter values and available profiles |
+| `nextflow_schema.json` | nf-schema parameter definitions, types, defaults, help text | Source of truth for the parameter tables in the README |
+| `assets/schema_input.json` | Samplesheet column schema (types, patterns, required columns) | Source of truth for the samplesheet documentation |
+| `assets/samplesheet.csv` | Worked example samplesheet | Referenced verbatim in the Quick start guide |
+| `config/modules.config` | Per-process and per-label CPU/memory allocation | Source of truth for the compute resource table |
+| `config/gadi.config` | NCI Gadi profile (PBS Pro) | Documented under infrastructure recommendations |
+| `config/setonix.config` | Pawsey Setonix profile (Slurm) | Documented under infrastructure recommendations |
+| `config/nimbus.config` | Pawsey Nimbus profile (cloud, with `c2r8`/`c4r16`/`c8r32`/`c16r64` size sub-profiles) | Documented under infrastructure recommendations |
+| `modules/*.nf` | One process per file | Each process appears as a row in the workflow summary table |
+| `subworkflows/*.nf` | Composed groups of processes | Documented as a single logical step in the diagram and table |
+| `bin/` | Custom executable scripts, callable directly from any process | `bin/README.md` explains the `chmod +x` requirement |
+| `tests/data/` | Small test datasets for the demo/CI run | Referenced by the Quick start guide |
+| `.github/ISSUE_TEMPLATE/` | Bug report, feature request, question templates | Linked from the Help / FAQ / Troubleshooting section |
+| `LICENSE` | Workflow licence | Linked from the License(s) section |
+| `README.md` | The primary user-facing documentation | Follows the section order below |
+
+## README section order
+
+The template ships a `README.md` skeleton with these headings. **Keep all of them, keep them in this order, and do not rename them.** The subsections listed underneath are drawn from the Australian BioCommons workflow documentation guidelines and should be added as the workflow matures.
+
+1. **Pipeline name** — `# <workflow-name>-nf` as an H1, followed immediately by a one-sentence summary and a table of contents with anchor links.
+
+2. **Workflow description** — 1–3 paragraphs: what biological or analytical question the workflow answers, what it takes in, what it produces, and who it is for. Then:
+   - A **workflow diagram** (`![](docs/images/<name>_dag.svg)` or a hand-drawn schematic) showing the logical flow of processes. The template writes a DAG to `${params.outdir}/runInfo/dag.<timestamp>.svg` on every run — use that as the starting point, but prefer a simplified hand-made diagram for the README.
+   - A **workflow summary table** with columns: `Step | Process/subworkflow | Tool | Description | Inputs | Outputs`. One row per process in `modules/`.
+   - A **How to cite this workflow** block, in the format:
+     > Author(s). (Year). **Workflow name vX.Y**. WorkflowHub. https://doi.org/...
+
+3. **User guide** — the largest section. Required subsections:
+   - **Quick start guide**: the minimum path from clone to result. Must include a runnable command using the shipped test data:
+     ```bash
+     nextflow run main.nf --input assets/samplesheet.csv -profile singularity
+     ```
+   - **Infrastructure requirements**: minimum Nextflow version (the template sets `nextflowVersion = '!>=24'` in the `manifest` block), Java version, and container engine (Singularity/Apptainer or Docker).
+   - **Install**: how to obtain the workflow (`git clone`, or `nextflow run <org>/<repo> -r <tag>`) and how to install Nextflow.
+   - **Preparing your samplesheet**: a table of samplesheet columns generated from `assets/schema_input.json` — one row per property, with columns `Column | Type | Required | Description`. Show a worked CSV example. Note which columns become `meta` values.
+   - **Required (minimum) inputs/parameters**: table of `Parameter | Type | Default | Description`, generated from the `required` array and properties in `nextflow_schema.json`.
+   - **Optional parameters**: same table format, for everything else in `nextflow_schema.json` and the `params` block of `nextflow.config`.
+   - **Compute profiles**: table of `Profile | Infrastructure | Scheduler/engine | Notes`, one row per entry in the `profiles` block. Document how profiles compose (e.g. `-profile gadi,singularity`).
+   - **Recommendations for use on specific compute systems**: one subsection per supported infrastructure. Cover scheduler, account/allocation setup, filesystem and storage flags, container cache location, and any environment variables the profile reads.
+   - **Workflow outputs**: a directory tree of `${params.outdir}` and a table of `File/directory | Description`. Always document `runInfo/` — it contains `dag.<timestamp>.svg`, `report.<timestamp>.html`, `timeline.<timestamp>.html` and `trace.<timestamp>.txt`, which the template enables by default.
+   - **Benchmarking (compute resource usage on tested infrastructures)**: see the required table format below.
+
+4. **Component tools** — a table of every tool invoked by a process: `Tool | Version | Container | Registry link`. Versions must be read from the `container` directive in `modules/*.nf`, not guessed. Link each tool to bio.tools where an entry exists.
+
+5. **Additional notes** — known limitations, assumptions about input data, non-obvious behaviour, and anything a user would otherwise discover the hard way.
+
+6. **Help / FAQ / Troubleshooting** — common errors and their fixes, plus a link to the repository issue tracker and the `.github/ISSUE_TEMPLATE/` options.
+
+7. **License(s)** — link to the `LICENSE` file and name the licence.
+
+8. **Acknowledgements/citations/credits** — attribution for the workflow, its component tools, and its funders. Contributor details should match the `manifest.contributors` block in `nextflow.config`.
+
+## Required table formats
+
+### Workflow summary table
+
+```markdown
+| Step | Process | Tool | Description | Inputs | Outputs |
+|------|---------|------|-------------|--------|---------|
+| 1 | `FASTQC` | `fastqc` 0.12.1 | Per-sample read quality control | FASTQ (R1, optional R2) | `fastqc_<sample>_logs/` |
+| 2 | `MULTIQC` | `multiqc` | Aggregates per-sample QC into one report | All FastQC logs | `multiqc_report.html` |
+```
+
+### Parameter table
+
+```markdown
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `--input` | file path (`.csv`) | none (**required**) | Path to the samplesheet CSV describing your samples |
+| `--outdir` | directory path | `results` | Directory where results are written |
+```
+
+### Samplesheet column table
+
+```markdown
+| Column | Type | Required | Description |
+|--------|------|----------|-------------|
+| `sample` | string, no spaces | Yes | Unique sample identifier. Becomes `meta.sample` |
+| `fastq_1` | file path (`.fastq`/`.fq`, optionally `.gz`) | Yes | Path to R1 reads. Must exist |
+| `fastq_2` | file path (`.fastq`/`.fq`, optionally `.gz`) | No | Path to R2 reads. Leave empty for single-end data |
+```
+
+### Compute resource table
+
+Derived from `config/modules.config`. Report the configured allocation, not an estimate.
+
+```markdown
+| Process | Label | CPUs | Memory |
+|---------|-------|------|--------|
+| `FASTQC` | `medium_job` | 2 | 8 GB |
+| `MULTIQC` | — | 1 | 4 GB |
+| *default* | — | 1 | 4 GB |
+```
+
+### Benchmarking table
+
+Use the Australian BioCommons benchmarking columns exactly. Populate from real runs only — read the values out of `${params.outdir}/runInfo/trace.<timestamp>.txt`.
+
+```markdown
+| Version | Sample description | Wall time | Cores | Peak RAM | Total size of all files (GB) | Compute system | Scheduler | Year-Month |
+|---------|--------------------|-----------|-------|----------|------------------------------|----------------|-----------|------------|
+```
+
+## Writing style
+
+- Use second person ("you", "your") throughout
+- Steps are imperative: "Clone the repository", "Edit your samplesheet"
+- Every code block has a language identifier: ` ```bash `, ` ```groovy `, ` ```json `, ` ```console `
+- Parameters, file names, directory names, process names and tool names are in backticks
+- Process names are written in the case used in the code: `FASTQC`, not `fastqc`, when referring to the Nextflow process
+- Workflow names are bolded on first mention
+- Show full runnable commands, not fragments. A user should be able to copy any command block and run it
+
+## Nextflow-specific conventions the documentation must get right
+
+These are the errors that most often appear in workflow documentation. Check every one.
+
+1. **Single vs double dash.** Nextflow's own options take a single dash (`-profile`, `-resume`, `-r`, `-c`, `-work-dir`, `-with-report`). Workflow parameters take a double dash (`--input`, `--outdir`). Getting this wrong makes every documented command fail silently or error.
+
+2. **`-profile` is comma-separated with no spaces.** `-profile gadi,singularity` is correct; `-profile gadi, singularity` is not.
+
+3. **`-resume` is documented explicitly.** Users need to know they can resume a failed run without recomputing completed tasks.
+
+4. **The `work/` directory is separate from `${params.outdir}`.** Document that `work/` holds intermediate task directories, can become very large, and is safe to delete once a run has completed and results are published.
+
+5. **Container engine is not optional.** Every process in the template declares a `container` directive, so the workflow must be run with `-profile singularity` or `-profile docker` (or an infrastructure profile that enables one). Say so in the Quick start guide.
+
+6. **Parameter defaults come from `nextflow.config`, not from prose.** If `nextflow.config` sets `outdir = 'results'`, the README says `results`.
+
+7. **Required parameters come from `nextflow_schema.json`.** The `required` array in each `$defs` group is authoritative. The template also fails fast in `main.nf` if `params.input` is not supplied.
+
+8. **Samplesheet columns come from `assets/schema_input.json`.** Do not document columns that are not in the schema, and do not omit columns that are. Note the `meta` annotations — those columns become metadata available to processes.
+
+9. **Resource requirements come from `config/modules.config`.** `withName` takes precedence over `withLabel`.
+
+10. **Infrastructure profiles read environment variables.** The Gadi profile reads `PROJECT` and `USER`; the Setonix profile reads `PAWSEY_PROJECT`. Document that these must be set, and how to override the Singularity cache directory (`--singularityCacheDir` on Gadi).
+
+11. **Nextflow version constraint.** `manifest.nextflowVersion` is set to `!>=24` in the template — the `!` makes it a hard failure, not a warning. Document the minimum version.
+
+12. **The `nf-schema` plugin is required.** The template declares `plugins { id 'nf-schema@2.7.2' }`. Nextflow will download it on first run, which requires network access — worth a note for air-gapped or compute-node-isolated systems.
+
+## Infrastructure profiles shipped with the template
+
+- **`gadi`** — NCI Gadi. PBS Pro executor. Reads `PROJECT` and `USER` from the environment. Queue is selected automatically by memory (`normalbw` < 128 GB, `normal` < 190 GB, else `hugemem`). Concurrent job limit 300. Loads the `singularity` module and writes an SU-accounting trace file. NCI maintains a site-specific Nextflow install: https://opus.nci.org.au/spaces/DAE/pages/138903678/Nextflow
+- **`setonix`** — Pawsey Setonix. Slurm executor. Reads `PAWSEY_PROJECT`. Resource limits 64 CPUs / 230 GB. Queue is `work`, or `highmem` above 230 GB. Loads `singularity/4.1.0-slurm`.
+- **`nimbus`** — Pawsey Nimbus cloud. Compose with a size sub-profile: `c2r8`, `c4r16`, `c8r32`, or `c16r64`. Example: `-profile nimbus,c8r32,singularity`.
+- **`singularity`** / **`docker`** — container engine only. Compose with an infrastructure profile or use alone on a local machine.
+
+## Registries and external resources to link
+
+| Registry | URL | Use |
+|----------|-----|-----|
+| WorkflowHub | workflowhub.eu | Register the workflow and cite it by versioned DOI |
+| bio.tools | bio.tools | Link an entry for every component tool |
+| Zenodo | zenodo.org | Mint a DOI for each release via the GitHub integration |
+| Seqera Containers / BioContainers | seqera.io/containers, biocontainers.pro | Source and cite container images |
+| Nextflow documentation | docs.seqera.io/nextflow | Link for Nextflow concepts you do not want to re-explain |
+
+## Contributor and citation metadata
+
+Contributor details live in the `manifest` block of `nextflow.config` and must stay consistent with `CITATION.cff` and the Acknowledgements section:
+
+```groovy
+manifest {
+    contributors = [
+        [
+            name        : 'Firstname Lastname',
+            affiliation : 'Sydney Informatics Hub',
+            email       : 'firstname.lastname@sydney.edu.au',
+            github      : 'https://github.com/username',
+            contribution: ['author'],
+            orcid       : '0000-0000-0000-0000'
+        ]
+    ]
+    name            = '<workflow-name>-nf'
+    description     = '<one-line description>'
+    homePage        = 'https://github.com/<org>/<repo>'
+    nextflowVersion = '!>=24'
+}
+```
+
+The `printInfo()` function in `main.nf` also prints the documentation URL and citation DOI to the terminal on every run. Both must be updated from the template placeholders (`<YOUR NAME>`, `INSERT DOI`).
+
+## AI assistant guidance for workflow developers
+
+When helping a developer document a workflow built from this template, you should:
+
+1. **Ask to see the code before writing anything.** You cannot document a Nextflow workflow accurately without `nextflow.config`, `nextflow_schema.json`, `assets/schema_input.json`, `config/modules.config`, and the contents of `modules/`. Ask for these files by name. If the developer cannot supply them, say clearly which sections you will not be able to complete.
+
+2. **Generate the workflow summary table first.** One row per process in `modules/`. This is the skeleton the rest of the README hangs off, and it forces the developer to name every step.
+
+3. **Derive, do not invent.** Parameter names, defaults, types, samplesheet columns, resource allocations, container images and tool versions all exist in the code. Read them out. Never guess a tool version or a default value — if you do not have the file, insert a placeholder:
+   ```
+   [PARAMETER DEFAULT: DEVELOPER TO SUPPLY - read from nextflow.config params block]
+   ```
+
+4. **Never invent DOIs, registry IDs, or benchmarking numbers.** Benchmarking figures in particular must come from a real run's `trace.txt`. Insert a clearly labelled placeholder instead:
+   ```
+   [WorkflowHub DOI: DEVELOPER TO SUPPLY - e.g. https://doi.org/10.48546/WORKFLOWHUB.WORKFLOW.XXX.Y]
+   ```
+
+5. **Check every command you write for the single/double dash rule** before presenting it.
+
+6. **Flag template placeholders left in the code.** `<YOUR NAME>`, `INSERT DOI`, `name = 'template-nf'`, `description = 'this is a test'` in `nextflow_schema.json`, and the demo `FASTQC`/`MULTIQC` processes all ship with the template and are frequently left unchanged. Point them out.
+
+7. **Distinguish demo code from real code.** `modules/template_process.nf`, `modules/fastqc.nf` and `modules/multiqc.nf` are demonstration processes. Ask whether they are still in use before documenting them as part of the workflow.
+
+8. **Suggest a diagram.** Workflow diagrams are the most-skipped and most-valuable section. Offer to draft one as a Mermaid flowchart the developer can paste directly into the README, and remind them the auto-generated DAG at `${params.outdir}/runInfo/dag.<timestamp>.svg` is a useful reference.
+
+9. **Keep `helpMessage()` and the README in sync.** If you add a parameter to the README parameter table, tell the developer to add it to `helpMessage()` in `main.nf` too, and vice versa.
+
+10. **Write directly in markdown.** Do not produce content in Google Docs, Word, or any other word processor format. All documentation should be authored as `.md` files in the repository from the start.
+
+11. **Prompt for `CITATION.cff` and `LICENSE`.** Neither is populated by the template beyond a stub.
+
+### Closing checklist
+
+At the end of any workflow documentation session, run the following review and flag anything missing or incomplete:
+
+- [ ] All eight template README sections present and in order (Pipeline name → Workflow description → User guide → Component tools → Additional notes → Help/FAQ/Troubleshooting → License(s) → Acknowledgements)
+- [ ] Table of contents present with working anchor links
+- [ ] Workflow diagram present, or a placeholder inserted with instructions on what to draw
+- [ ] Workflow summary table present (Step | Process | Tool | Description | Inputs | Outputs) with one row per process in `modules/`
+- [ ] Quick start guide contains a complete, runnable `nextflow run` command including a container profile
+- [ ] Samplesheet columns documented and consistent with `assets/schema_input.json`
+- [ ] Required and optional parameter tables consistent with `nextflow_schema.json` and the `params` block in `nextflow.config`
+- [ ] Every profile in the `profiles` block of `nextflow.config` is documented
+- [ ] Environment variables required by infrastructure profiles (`PROJECT`, `PAWSEY_PROJECT`) documented
+- [ ] Output directory structure documented, including `runInfo/`
+- [ ] Compute resource table consistent with `config/modules.config`
+- [ ] Benchmarking table present, with real values or an explicit "not yet benchmarked" note
+- [ ] Component tools table lists a version and container image for every tool, read from the `container` directives
+- [ ] bio.tools link included for every component tool that has an entry
+- [ ] `-` vs `--` correct in every documented command
+- [ ] Minimum Nextflow version stated
+- [ ] All code blocks have a language identifier
+- [ ] `helpMessage()` in `main.nf` matches the documented parameters
+- [ ] `manifest` block in `nextflow.config` updated from template defaults (name, description, homePage, contributors)
+- [ ] `printInfo()` placeholders replaced (`<YOUR NAME>`, `INSERT DOI`, documentation URL)
+- [ ] `nextflow_schema.json` title and description updated from template defaults
+- [ ] Demo processes (`FASTQC`, `MULTIQC`, `template_process.nf`) either removed or genuinely part of the workflow
+- [ ] `CITATION.cff` populated with title, authors, ORCID, version, licence and repository URL
+- [ ] `LICENSE` file present and named in the License(s) section
+- [ ] No DOIs, registry IDs, tool versions or benchmarking numbers are placeholders — all real values supplied by the developer
+
+## Related repositories and resources
+
+- Nextflow DSL2 template (codebase): https://github.com/Sydney-Informatics-Hub/Nextflow_DSL2_template
+- Template generator ("Use this template"): https://github.com/Sydney-Informatics-Hub/template-nf
+- Template user guide: https://sydney-informatics-hub.github.io/template-nf-guide/
+- Australian BioCommons documentation guidelines: https://github.com/AustralianBioCommons/doc_guidelines
+- BioCommons workflow documentation template: https://github.com/AustralianBioCommons/doc_guidelines/blob/master/documentation_templates/workflows.md
+- BioCommons infrastructure optimisation template: https://github.com/AustralianBioCommons/doc_guidelines/blob/master/documentation_templates/infrastructure_optimisation.md
+- Nextflow documentation: https://docs.seqera.io/nextflow
+- Nextflow training: https://training.nextflow.io/
+- nf-schema plugin: https://nextflow-io.github.io/nf-schema/
+- WorkflowHub: https://workflowhub.eu/
