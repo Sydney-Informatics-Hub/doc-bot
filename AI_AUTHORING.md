@@ -4,8 +4,8 @@ This repository includes two files that help you use an AI assistant to write a 
 
 | File | Purpose |
 |------|---------|
-| [`./llms.txt`](./llm.txt) | Describes all BioCommons template conventions — the AI reads this to understand what a finished guide should look like |
-| [`./GUIDE_CONTEXT.md`](./GUIDE_CONTEXT.md) | A form you fill in before each writing session — tells the AI what you are specifically building |
+| [`service/llm.txt`](./service/llm.txt) | Describes all BioCommons template conventions — the AI reads this to understand what a finished guide should look like |
+| [`service/SERVICE_CONTEXT.md`](./service/SERVICE_CONTEXT.md) | A form you fill in before each writing session — tells the AI what you are specifically building |
 
 Using both files together means you spend less time correcting AI output and less time
 explaining BioCommons conventions from scratch. The AI handles structure and formatting;
@@ -17,11 +17,11 @@ You will need:
 
 - An AI assistant with a chat interface (Claude, ChatGPT, Gemini, GitHub Copilot Chat, or similar)
 - A fork of this repository
-- 10–15 minutes to fill in `GUIDE_CONTEXT.md` before your first session
+- 10–15 minutes to fill in `service/SERVICE_CONTEXT.md` before your first session
 
-## Step 1: Fill in `GUIDE_CONTEXT.md`
+## Step 1: Fill in `service/SERVICE_CONTEXT.md`
 
-Open [`./GUIDE_CONTEXT.md`](./GUIDE_CONTEXT.md) and work through the fields. You do not need to have every answer. Write `Not yet known` for anything you cannot fill in yet. Fields left blank are ignored by the AI; fields marked `Not yet known` will generate a visible placeholder in the
+Open [`service/SERVICE_CONTEXT.md`](./service/SERVICE_CONTEXT.md) and work through the fields. You do not need to have every answer. Write `Not yet known` for anything you cannot fill in yet. Fields left blank are ignored by the AI; fields marked `Not yet known` will generate a visible placeholder in the
 guide and appear on the closing checklist.
 
 The fields that matter most are:
@@ -40,7 +40,7 @@ Open a new conversation with your AI assistant. A new conversation each session 
 
 Paste the following in order, waiting for the AI to acknowledge each one:
 
-**Message 1**: paste the full contents of `llms.txt`:
+**Message 1**: paste the full contents of `service/llm.txt`:
 
 ```
 > I'm writing a BioCommons how-to guide. Use the conventions in the following file for
@@ -49,7 +49,7 @@ Paste the following in order, waiting for the AI to acknowledge each one:
 > <paste llms.txt contents here>
 ```
 
-**Message 2**: paste your filled-in `GUIDE_CONTEXT.md`:
+**Message 2**: paste your filled-in `service/SERVICE_CONTEXT.md`:
 
 ```
 > Here is the context for the specific guide I'm writing today.
