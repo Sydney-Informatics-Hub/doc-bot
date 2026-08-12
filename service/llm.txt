@@ -1,6 +1,6 @@
 # Australian BioCommons How-to Guide Template
 
-This repository is a GitHub template for creating bioinformatics How-to Guide websites. It is maintained by Australian BioCommons and used by researchers and bioinformaticians across Australian national compute infrastructure (Galaxy Australia, NCI Gadi, Pawsey Setonix, etc.).
+This repository is a GitHub template for creating bioinformatics How-to Guide websites. It is maintained by Australian BioCommons and used by researchers, bioinformaticians, and service providers across Australian national compute infrastructure (Galaxy Australia, NCI Gadi, Pawsey Setonix).
 
 Guides are deployed as GitHub Pages sites using the ELIXIR Toolkit theme.
 
