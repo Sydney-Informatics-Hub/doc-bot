@@ -1,15 +1,15 @@
 # Guide Authoring Context Template
 
 Use this file to set up an AI-assisted guide writing session. Fill in as many fields as you
-can before starting — the more context you provide upfront, the less the AI will need to ask,
+can before starting, the more context you provide upfront, the less the AI will need to ask,
 and the closer the first draft will be to the BioCommons template conventions.
 
 ## How to use this file
 
-1. Fill in the fields below (leave any unknowns as `Not yet known`)
+1. Fill in the fields below (leave any unknowns as `Unknown`)
 2. Open a new conversation with your AI assistant (Claude, Copilot, etc.)
 3. Paste the full contents of `llms.txt` and say:
-   > "I'm writing a BioCommons how-to guide. Use the conventions in the above file for
+   > "I'm writing an Australian BioCommons how-to guide. Use the conventions in the above file for
    > everything you help me produce."
 4. Paste the full contents of this filled-in file and say:
    > "Here is the context for the specific guide I'm writing today."
