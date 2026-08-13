@@ -1,8 +1,6 @@
-# Sydney Informatics Hub Nextflow DSL2 Workflow Documentation
+# Nextflow Workflow Documentation
 
-This file describes the conventions for documenting a Nextflow DSL2 workflow built from the Sydney Informatics Hub (SIH) Nextflow DSL2 template. It is maintained by the Sydney Informatics Hub, a Core Research Facility of the University of Sydney, in partnership with Australian BioCommons.
-
-Workflows built from this template are documented primarily in the repository `README.md`, supplemented by per-directory `README.md` files and inline code comments.
+This file describes the conventions for documenting a Nextflow workflow built from the Sydney Informatics Hub (SIH) template. Workflows built from this template are documented primarily in the repository `README.md`, supplemented by per-directory `README.md` files and inline code comments.
 
 ## Purpose
 
@@ -41,7 +39,7 @@ Underlying documentation standard: https://github.com/AustralianBioCommons/doc_g
 
 ## README section order
 
-The template ships a `README.md` skeleton with these headings. **Keep all of them, keep them in this order, and do not rename them.** The subsections listed underneath are drawn from the Australian BioCommons workflow documentation guidelines and should be added as the workflow matures.
+The template ships a `README.md` skeleton with these headings. Keep all of them, keep them in this order, and do not rename them. The subsections listed underneath are drawn from the Australian BioCommons workflow documentation guidelines and should be added as the workflow matures.
 
 1. **Pipeline name** — `# <workflow-name>-nf` as an H1, followed immediately by a one-sentence summary and a table of contents with anchor links.
 
@@ -120,7 +118,7 @@ Derived from `config/modules.config`. Report the configured allocation, not an e
 
 ### Benchmarking table
 
-Use the Australian BioCommons benchmarking columns exactly. Populate from real runs only — read the values out of `${params.outdir}/runInfo/trace.<timestamp>.txt`.
+Use the Australian BioCommons benchmarking columns exactly. Populate from real runs only, where these are provided. Read the values out of `${params.outdir}/runInfo/trace.<timestamp>.txt`.
 
 ```markdown
 | Version | Sample description | Wall time | Cores | Peak RAM | Total size of all files (GB) | Compute system | Scheduler | Year-Month |
@@ -167,9 +165,8 @@ These are the errors that most often appear in workflow documentation. Check eve
 
 ## Infrastructure profiles shipped with the template
 
-- **`gadi`** — NCI Gadi. PBS Pro executor. Reads `PROJECT` and `USER` from the environment. Queue is selected automatically by memory (`normalbw` < 128 GB, `normal` < 190 GB, else `hugemem`). Concurrent job limit 300. Loads the `singularity` module and writes an SU-accounting trace file. NCI maintains a site-specific Nextflow install: https://opus.nci.org.au/spaces/DAE/pages/138903678/Nextflow
-- **`setonix`** — Pawsey Setonix. Slurm executor. Reads `PAWSEY_PROJECT`. Resource limits 64 CPUs / 230 GB. Queue is `work`, or `highmem` above 230 GB. Loads `singularity/4.1.0-slurm`.
-- **`nimbus`** — Pawsey Nimbus cloud. Compose with a size sub-profile: `c2r8`, `c4r16`, `c8r32`, or `c16r64`. Example: `-profile nimbus,c8r32,singularity`.
+- **`gadi`**: NCI Gadi. PBS Pro executor. Reads `PROJECT` and `USER` from the environment. Queue is selected automatically by memory (`normalbw` < 128 GB, `normal` < 190 GB, else `hugemem`). Concurrent job limit 300. Loads the `singularity` module and writes an SU-accounting trace file. NCI maintains a site-specific Nextflow install: https://opus.nci.org.au/spaces/DAE/pages/138903678/Nextflow
+- **`setonix`**: Pawsey Setonix. Slurm executor. Reads `PAWSEY_PROJECT`. Resource limits 64 CPUs / 230 GB. Queue is `work`, or `highmem` above 230 GB. Loads `singularity/4.1.0-slurm`.
 - **`singularity`** / **`docker`** — container engine only. Compose with an infrastructure profile or use alone on a local machine.
 
 ## Registries and external resources to link
