@@ -1,23 +1,17 @@
 # doc-bot
 
-AI-assisted authoring kit for documentation that matches Australian BioCommons and Sydney
-Informatics Hub conventions. This repo provides context files that you load into an AI
-assistant at the start of a session so it produces drafts that match the target template
-without manual correction.
-
-**Note:** This repo is being tested ahead of conversion to an MCP server. For now, use the
-manual paste workflow described below.
+AI-assisted authoring kit for documentation that matches Australian BioCommons conventions. This repo provides context files that you load into an AI assistant at the start of a session so it produces drafts that match the target template without manual correction.
 
 ## Which files to use
 
-doc-bot supports two documentation types. Pick the folder that matches what you're writing —
+doc-bot supports two documentation types. Pick the folder that matches what you're writing,
 each is self-contained and used the same basic way (paste conventions, paste context, work
 section by section, run a closing checklist).
 
 | I'm writing... | Use folder | Target output |
 |---|---|---|
-| A BioCommons how-to guide (Galaxy Australia, NCI Gadi, Pawsey Setonix, etc.) | [`service/`](./service) | A guide repo built from the [BioCommons guide template](https://australianbiocommons.github.io/how-to-guide-template/) |
-| A README for a Nextflow DSL2 workflow built from the SIH template | [`workflow/`](./workflow) | The workflow's own `README.md` |
+| A BioCommons how-to guide for a service (e.g. BioShell) | [`service/`](./service) | A guide repo built from the [BioCommons guide template](https://australianbiocommons.github.io/how-to-guide-template/) |
+| A README for a Nextflow workflow built from the SIH template | [`workflow/`](./workflow) | The workflow's own `README.md` |
 
 ---
 
@@ -36,9 +30,9 @@ session, and see [TESTING.md](./TESTING.md) for how to evaluate the output.
 
 1. **Fork this repo** (or copy `service/llm.txt` and `service/SERVICE_CONTEXT.md` into your guide template repo)
 2. **Fill in `service/SERVICE_CONTEXT.md`** — title, tool name, and target platform are the minimum required fields; write `Not yet known` for anything else
-3. **Open a new AI conversation** (Claude, ChatGPT, Copilot, Gemini — any chat interface works)
+3. **Open a new AI conversation** (Claude, ChatGPT, Copilot, Gemini)
 4. **Paste `service/llm.txt`** as message 1:
-   > I'm writing a BioCommons how-to guide. Use the conventions in the following file for everything you help me produce today.
+   > I'm writing an Australian BioCommons how-to guide. Use the conventions in the following file for everything you help me produce today.
    > `<paste service/llm.txt contents>`
 5. **Paste your filled-in `service/SERVICE_CONTEXT.md`** as message 2:
    > Here is the context for the specific guide I'm writing today.
@@ -50,25 +44,23 @@ session, and see [TESTING.md](./TESTING.md) for how to evaluate the output.
 
 ---
 
-## `workflow/` — Nextflow DSL2 workflow documentation
+## `workflow/` — Nextflow workflow documentation
 
 | File | What it is | How to use it |
 |------|-----------|---------------|
-| [`workflow/llm.txt`](./workflow/llm.txt) | Conventions for documenting a Nextflow DSL2 workflow built from the Sydney Informatics Hub template — README section order, required table formats, Nextflow-specific gotchas (`-` vs `--`, profiles, samplesheet schema), and a closing checklist | Paste into the AI as the first message of every session |
+| [`workflow/llm.txt`](./workflow/llm.txt) | Conventions for documenting a Nextflow workflow built from the [Sydney Informatics Hub template](https://github.com/Sydney-Informatics-Hub/template-nf), using the [Australian BioCommons workflow documentation guidelines](https://github.com/AustralianBioCommons/doc_guidelines/blob/master/documentation_templates/workflows.md) — README section order, required table formats, Nextflow-specific gotchas (`-` vs `--`, profiles, samplesheet schema), and a closing checklist | Paste into the AI as the first message of every session |
 
-There is no context form to fill in for this pack. Instead of a template, you give the AI the
-workflow's own source files so the documentation is derived from the code, not invented:
-`nextflow.config`, `nextflow_schema.json`, `assets/schema_input.json`, `config/modules.config`,
-and the contents of `modules/`.
+There is no context form to fill in for this pack. Instead of a template, you give the AI the workflow's source files so the documentation is derived from the code. Provide `main.nf`, 
+`nextflow.config`, `nextflow_schema.json`, `assets/schema_input.json`, `config/modules.config`, and the contents of `modules/`.
 
 ### Quickstart
 
-1. **Open a new AI conversation**
+1. **Open a new conversation**
 2. **Paste `workflow/llm.txt`** as message 1:
-   > I'm documenting a Nextflow DSL2 workflow built from the Sydney Informatics Hub template. Use the conventions in the following file for everything you help me produce today.
+   > I'm documenting a Nextflow workflow built from the Sydney Informatics Hub template. Use the conventions in the following file for everything you help me produce today.
    > `<paste workflow/llm.txt contents>`
 3. **Paste the workflow's source files** as message 2:
-   > Here is the code for the workflow I'm documenting: `nextflow.config`, `nextflow_schema.json`, `assets/schema_input.json`, `config/modules.config`, and `modules/*.nf`.
+   > Here is the code for the workflow I'm documenting: `main.nf`, `nextflow.config`, `nextflow_schema.json`, `assets/schema_input.json`, `config/modules.config`, and `modules/*.nf`.
    > `<paste file contents>`
 4. **Generate the workflow summary table first** — one row per process in `modules/`:
    > Generate the workflow summary table (Step | Process | Tool | Description | Inputs | Outputs). Do not write any prose yet.
