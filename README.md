@@ -4,7 +4,7 @@ AI-assisted authoring kit for documentation that matches Australian BioCommons c
 
 ## Which files to use
 
-doc-bot supports two documentation types. Pick the folder that matches what you're writing,
+doc-bot supports three documentation types. Pick the folder that matches what you're writing,
 each is self-contained and used the same basic way (paste conventions, paste context, work
 section by section, run a closing checklist).
 
@@ -12,6 +12,7 @@ section by section, run a closing checklist).
 |---|---|---|
 | A BioCommons how-to guide for a service (e.g. BioShell) | [`service/`](./service) | A guide repo built from the [BioCommons guide template](https://australianbiocommons.github.io/how-to-guide-template/) |
 | A README for a Nextflow workflow built from the SIH template | [`workflow/`](./workflow) | The workflow's own `README.md` |
+| A reusable workshop/training package (trainer guides + learner site) | [`training/`](./training) | A MkDocs template repo structured like [nf4ls-materials](https://github.com/Sydney-Informatics-Hub/nf4ls-materials) |
 
 ---
 
@@ -67,6 +68,29 @@ There is no context form to fill in for this pack. Instead of a template, you gi
 5. **Work through the remaining README sections one at a time**, in the order given in `workflow/llm.txt`
 6. **At the end of every session**, run the closing checklist:
    > Run the closing checklist from `workflow/llm.txt` against the README we have written today and tell me what is missing or incomplete.
+
+---
+
+## `training/` — Training packages
+
+| File | What it is | How to use it |
+|------|-----------|---------------|
+| [`training/llm.txt`](./training/llm.txt) | Conventions for a reusable training package based on the [nf4ls-materials](https://github.com/Sydney-Informatics-Hub/nf4ls-materials) structure, generalised to any subject: repository layout (`docs/assets`, `docs/instructor`, `docs/workshop`, `setup/`), `mkdocs.yml` nav with instructor markers, page anatomy for trainer and learner pages, lesson plan table format, admonition conventions, the "Use this template" automation, migration steps for existing materials, and a closing checklist | Paste into the AI as the first message of every session |
+| [`training/TRAINING_CONTEXT.md`](./training/TRAINING_CONTEXT.md) | A form you fill in before each session: workshop name, audience, parts and lessons, delivery, training environment, existing materials, authors, and session goals | Fill in, then paste as the second message of every session |
+
+### Quickstart
+
+1. **Fill in `training/TRAINING_CONTEXT.md`**. Workshop name, subject, and the lesson list are the minimum
+2. **Open a new AI conversation**
+3. **Paste `training/llm.txt`** as message 1:
+   > I'm building a training package. Use the conventions in the following file for everything you help me produce today.
+   > `<paste training/llm.txt contents>`
+4. **Paste your filled-in `training/TRAINING_CONTEXT.md`** as message 2. If you are restructuring existing materials, also paste the current `mkdocs.yml` and a file listing
+5. **Generate the skeleton first**:
+   > Generate the folder tree, the mkdocs.yml nav block, and the lesson plan table for each part. Do not write any lesson prose yet.
+6. **Work page by page** in the order given in `training/llm.txt`
+7. **At the end of every session**, run the closing checklist:
+   > Run the closing checklist from `training/llm.txt` against the package and tell me what is missing or incomplete.
 
 ---
 
