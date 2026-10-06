@@ -11,6 +11,10 @@ Using both files together means you spend less time correcting AI output and les
 explaining BioCommons conventions from scratch. The AI handles structure and formatting;
 you supply the technical content.
 
+> **Note:** Steps 1–5 below describe the `service/` pack. The `training/` pack follows the same
+> session pattern; its differences are covered in [Training packages](#training-packages) near the
+> end of this page.
+
 ## Before you start
 
 You will need:
@@ -167,9 +171,50 @@ Always verify registry links by visiting the URL before publishing. If the link 
 Split the guide into a multi-page structure. See the BioCommons guide template documentation for how to configure the sidebar for multi-page guides:
 https://australianbiocommons.github.io/how-to-guide-template/add_new_pages
 
+## Training packages
+
+The [`training/`](./training) pack uses the same session pattern as the steps above, with these differences:
+
+| Step | `service/` | `training/` |
+|------|-----------|-------------|
+| Conventions file (message 1) | `service/llm.txt` | `training/llm.txt` |
+| Context form (message 2) | `service/SERVICE_CONTEXT.md` | `training/TRAINING_CONTEXT.md` |
+| Extra inputs | None | When restructuring existing materials: the current `mkdocs.yml` and a file listing of the source repository |
+| Skeleton first | Quick Start checklist and workflow summary table | Folder tree, `mkdocs.yml` nav block, and one lesson plan table per part |
+| Then | One guide section at a time | One page at a time: lesson plan tables → learner home → lessons (part by part) → trainer guides → `environment.md` → `materials.md` → trainer home → `setup/README.md` → metadata |
+| Placeholders | `[... : AUTHOR TO SUPPLY]` | `[... : TRAINER TO SUPPLY - ...]` |
+
+Message 3 (confirm understanding) for a training package:
+
+```
+> Based on the two files above, summarise: what parts and lessons will this package contain,
+> which pages are for trainers and which are for learners, and what are the three most
+> important things you will need me to supply that you cannot generate yourself?
+```
+
+When restructuring existing materials, ask for a mapping before any files move:
+
+```
+> Produce a table mapping every existing page and image to its destination path:
+> Source path | Destination path | Action (move / split / merge / rewrite / drop).
+> Do not move anything yet.
+```
+
+Check the AI's output for these, which are the most common training-pack errors:
+
+- Trainer notes left in `docs/workshop/` pages (they must move to `docs/instructor/ptN-guide.md`)
+- Lesson numbers that differ between the file name, page H1, nav label, logistics table, and trainer guide
+- Stub lessons filled with invented content instead of a visible placeholder
+- Exercise and solution boxes not using `!!! question "Exercise"` / `??? success "Solution"`
+
+At the end of every session, run:
+
+> Run the closing checklist from `training/llm.txt` against the package and tell me what is missing or incomplete.
+
 ## Getting help
 
 - BioCommons guide template documentation: https://australianbiocommons.github.io/how-to-guide-template/
 - How-to Hub (existing guides for reference): https://australianbiocommons.github.io/how-to-hub/
 - BioCommons documentation guidelines: https://github.com/AustralianBioCommons/doc_guidelines
 - Report issues with this template: https://github.com/AustralianBioCommons/guide-template/issues
+- Reference training package: https://github.com/Sydney-Informatics-Hub/nf4ls-materials

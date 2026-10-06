@@ -1,0 +1,542 @@
+# Training Package Documentation
+
+This file describes the conventions for building a reusable training package: a GitHub template repository that holds everything another trainer needs to understand, deliver, and adapt a workshop. The structure is taken from the Sydney Informatics Hub (SIH) *Nextflow for the Life Sciences* materials repository (`nf4ls-materials`) and generalised so it applies to any topic, not only Nextflow.
+
+A training package serves two audiences from one repository:
+
+- **Trainers** (instructors, facilitators, and people adapting the materials) read the trainer home page and the `instructor/` pages.
+- **Learners** (workshop participants) read the `workshop/` pages, which are published to them as a standalone site after the instructor content is removed.
+
+## Purpose
+
+The documentation goal is to:
+
+- Let a trainer who has never seen the workshop deliver it, using only this repository
+- Give learners a self-contained, step-by-step lesson site they can follow live or self-paced
+- Make the teaching design explicit: what each lesson teaches, why, how, and how long it takes
+- Make the training environment reproducible, so another trainer can stand it up from scratch
+- Support citation and reuse via Zenodo DOIs, `CITATION.cff`, and a CC BY 4.0 licence
+- Let another organisation create its own copy of the learner site 
+
+Reference implementation: https://github.com/Sydney-Informatics-Hub/nf4ls-materials
+Published trainer site: https://sydney-informatics-hub.github.io/nf4ls-materials/
+Site generator: MkDocs with the Material theme (https://squidfunk.github.io/mkdocs-material/)
+
+## Repository structure
+
+Keep every path below. Paths marked *optional* can be left out when they do not apply (for example, a workshop that does not need learners to log in to a prepared computing environment has no `setup/` folder).
+
+| Path | Purpose | Documentation obligation |
+|------|---------|--------------------------|
+| `README.md` | Explains the repository as a template: how to create a copy, what the copy contains, how to turn on GitHub Pages | Written for a trainer about to reuse the package, not for learners |
+| `mkdocs.yml` | Site configuration and navigation | Instructor nav entries wrapped in `# INSTRUCTOR_START` / `# INSTRUCTOR_END` markers. Every `.md` page under `docs/` appears in `nav` |
+| `cookiecutter.json` | Default values for the placeholders replaced when a copy is created | Valid JSON (no trailing commas). Keys: `repo_name`, `site_name`, `github_username` |
+| `CITATION.cff` | Citation metadata | Title, all authors with ORCIDs, licence, repository URL, DOI once minted |
+| `.zenodo.json` | Zenodo deposit metadata | `upload_type: "lesson"`, description covering format, audience, prerequisites, learning outcomes, contact |
+| `AUTHORS` | Plain list of contributors | Matches `CITATION.cff` |
+| `CONTRIBUTING.md` | How trainers contribute improvements after delivery | Emphasise learner-feedback-driven changes |
+| `CODE_OF_CONDUCT.md` | Points to the Australian BioCommons Code of Conduct (https://zenodo.org/records/4276854) | Lists scope: GitHub spaces and training events |
+| `LICENSE` | CC BY 4.0 | Named on the trainer home page and in `CONTRIBUTING.md` |
+| `.github/workflows/mkdocs_deploy.yml` | Builds and publishes the site to GitHub Pages on push to `main` | No documentation needed |
+| `.github/workflows/template.yml` | Runs once in a copy made with "Use this template": substitutes placeholders, removes instructor content, deletes itself | See [Template automation](#template-automation) |
+| `docs/index.md` | **Trainer home page** | See [Trainer home page](#trainer-home-page-docsindexmd) |
+| `docs/extra.css` | Brand colours and grid card layout | No documentation needed |
+| `docs/assets/` | Logos and downloadable trainer templates (runsheet, participant discussion document) | Every file in here is linked from an instructor page |
+| `docs/instructor/logistics.md` | Delivery modes, lesson plan tables, delivery considerations, learner and trainer support | See [Instructor pages](#instructor-pages-docsinstructor) |
+| `docs/instructor/environment.md` | Hardware, software, and platform requirements; preconfigured setup; pre-workshop checks | See [Instructor pages](#instructor-pages-docsinstructor) |
+| `docs/instructor/materials.md` | How the materials are organised, trainer guidance, links to per-part guides | See [Instructor pages](#instructor-pages-docsinstructor) |
+| `docs/instructor/ptN-guide.md` | One per part: lesson-by-lesson teaching notes | See [Per-part trainer guide](#per-part-trainer-guide-docsinstructorptn-guidemd) |
+| `docs/workshop/index.md` | **Learner home page**: trainers, facilitators, prerequisites, setup link, code of conduct, schedule, survey, credits | See [Learner home page](#learner-home-page-docsworkshopindexmd) |
+| `docs/workshop/setup.md` | Learner setup instructions (software to install, how to connect) | Numbered steps with a screenshot per step |
+| `docs/workshop/resources.md` | Glossary and recommended further resources for learners | One glossary row per term defined in the lessons |
+| `docs/workshop/img/` | Screenshots used by `setup.md` | Named `<topic>_<n>.png` (e.g. `ssh_0.png`) |
+| `docs/workshop/partN/NN_slug.md` | One lesson per file | See [Lesson page](#lesson-page-docsworkshoppartnnn_slugmd) |
+| `docs/workshop/partN/img/` | Figures for that part | Keep editable sources (`.excalidraw`, `.drawio`, `.svg`) next to the exported `.png` |
+| `docs/workshop/partN/materials/` *optional* | Code, data, and scripts learners work with in that part | Referenced by path from the lessons. Small files only — large data is staged by `setup/` |
+| `setup/` *optional* | Scripts that build the training environment from scratch | See [Environment setup folder](#environment-setup-folder-setup) |
+
+### Folder tree
+
+```text
+<package>-materials/
+├── README.md
+├── mkdocs.yml
+├── cookiecutter.json
+├── CITATION.cff
+├── .zenodo.json
+├── AUTHORS
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+├── LICENSE
+├── .github/workflows/
+│   ├── mkdocs_deploy.yml
+│   └── template.yml
+├── docs/
+│   ├── index.md                     # trainer home
+│   ├── extra.css
+│   ├── assets/
+│   │   ├── <org>-logo.png
+│   │   ├── template-trainer-runsheet.docx
+│   │   └── template-participant-discussion.docx
+│   ├── instructor/
+│   │   ├── logistics.md
+│   │   ├── environment.md
+│   │   ├── materials.md
+│   │   ├── pt1-guide.md
+│   │   └── pt2-guide.md
+│   └── workshop/
+│       ├── index.md                 # learner home
+│       ├── setup.md
+│       ├── resources.md
+│       ├── img/
+│       ├── part1/                  # optional
+│       │   ├── 00_intro.md
+│       │   ├── 01_<slug>.md
+│       │   ├── ...
+│       │   ├── NN_outro.md
+│       │   ├── img/
+│       │   └── materials/           # optional
+│       └── part2/                   # optional
+│           └── ...
+└── setup/                           # optional
+    ├── README.md
+    ├── install.sh
+    ├── lib/
+    └── img/
+```
+
+Notes on the structure:
+
+- **Parts**, not days. A part is a coherent block of lessons with one overarching goal (e.g. "conceptual foundations", then "hands-on application"). Most packages have two or three parts. Parts map onto delivery sessions in the schedule, but the mapping is decided in `logistics.md`, not by the folder layout.
+- **Lesson numbering** is `<part>.<lesson>` and is identical everywhere it appears: the file name (`part2/03_quant.md` is lesson 2.3), the page H1 (`# 2.3 Multiple inputs`), the nav label (`2.3 Multiple inputs`), the logistics table row, and the H2 in `pt2-guide.md`. Lesson `N.0` is the part introduction. The last lesson of a part is a wrap-up/outro.
+- **Instructor content never lives under `docs/workshop/`.** Anything only a trainer should see goes in `docs/instructor/`, `docs/index.md`, or `setup/`. This is what makes the participant copy safe to publish.
+- **One setup page for learners.** Learner setup lives in `docs/workshop/setup.md` only. Do not keep a second copy at `docs/setup.md`. Trainer-side environment requirements live in `docs/instructor/environment.md`.
+
+## Navigation (`mkdocs.yml`)
+
+The `nav` block has two top-level sections. The instructor section is wrapped in markers so the template workflow can delete it with `sed`. Do not put anything else between the markers, and keep each marker on its own line at the same indentation as the nav items.
+
+```yaml
+site_name: "{{cookiecutter.site_name}}"
+repo_url: "https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.repo_name}}"
+repo_name: "{{cookiecutter.github_username}}/{{cookiecutter.repo_name}}"
+
+nav:
+  # INSTRUCTOR_START
+  - Home: index.md
+  - Instructor guides:
+      - Training logistics: instructor/logistics.md
+      - Training infrastructure: instructor/environment.md
+      - Training materials:
+          - Materials guide: instructor/materials.md
+          - Part 1: instructor/pt1-guide.md
+          - Part 2: instructor/pt2-guide.md
+  # INSTRUCTOR_END
+  - Workshop materials:
+      - Home: workshop/index.md
+      - Setup: workshop/setup.md
+      - Part 1:
+          - 1.0 Introduction: workshop/part1/00_intro.md
+          - 1.1 <Lesson title>: workshop/part1/01_<slug>.md
+          - 1.N Wrapping up: workshop/partN/NN_outro.md
+      - Part 2:
+          - 2.0 Introduction: workshop/part2/00_intro.md
+      - Resources: workshop/resources.md
+```
+
+Required theme settings and Markdown extensions (these are what the page conventions below depend on):
+
+```yaml
+theme:
+  name: material
+  logo: assets/<org>-logo.png
+  features:
+    - navigation.footer
+    - content.code.copy
+    - content.tabs.link        # keeps platform tabs in sync across a page
+  palette:
+    - scheme: default
+      primary: custom
+      toggle: {icon: material/weather-night, name: Switch to dark mode}
+    - scheme: slate
+      primary: custom
+      toggle: {icon: material/weather-sunny, name: Switch to light mode}
+
+extra_css:
+  - extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      preserve_tabs: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+```
+
+## Page anatomy
+
+### Trainer home page (`docs/index.md`)
+
+No H1 (the site name serves as the title). In order:
+
+1. **One-paragraph summary** of what the package contains and what the workshop teaches.
+2. **One paragraph on the subject** (the tool, method, or skill being taught) and why it matters to the audience.
+3. **Who this is for**: "The content of these pages is designed to help other trainers re-run and adapt <Org>'s <Workshop name> workshop for their own learners."
+4. **"It will help you to:"** followed by 4–6 bullets starting with a verb (Explain, Deliver, Support, Adapt, Evaluate).
+5. **Grid cards** linking to the three instructor pages:
+   ```markdown
+   <div class="grid cards" markdown>
+
+   -   :material-cog:{ .lg .middle } **Training logistics**
+
+       ---
+
+       [:octicons-arrow-right-24: Workshop structure, timings, and delivery considerations](instructor/logistics.md)
+
+   -   :fontawesome-solid-computer:{ .lg .middle } **Training environment**
+
+       ---
+
+       [:octicons-arrow-right-24: Software and files required for workshop delivery](instructor/environment.md)
+
+   -   :material-book:{ .lg .middle } **Training materials**
+
+       ---
+
+       [:octicons-arrow-right-24: Materials and teaching resources](instructor/materials.md)
+
+   </div>
+   ```
+6. **`!!! note "Previous iterations of this workshop"`** listing links to earlier delivered sites, newest last. Omit only if this is the first delivery.
+7. **`## Acknowledgement`** containing a `!!! note "If you use or adapt these materials, please cite us"` block with the full citation (authors, year, title, Zenodo, DOI), then the funding/enabling statement, then the logos image.
+
+### Instructor pages (`docs/instructor/`)
+
+No H1 on these pages. Each opens with a one-sentence statement of what the page covers: "This page outlines…", "This page provides…".
+
+**`logistics.md`**
+
+1. Opening sentence, then a bullet list of delivery modes the materials support (online, in-person, hybrid, self-paced).
+2. `## Workshop structure and suggested timing`: the overarching goal of the workshop in one or two sentences, a reminder to tie technical content back to the learners' domain, then a statement that timings can be adapted.
+3. **One content tab per part**, each with a one-sentence description, an H3 repeating the part title, and the lesson plan table (format below):
+   ```markdown
+   === "Part 1 - **<Part title>**"
+
+       <One-sentence description of the part.>
+
+       ### Part 1 - <Part title>
+
+       | Lesson | Teaching Objective | Learning Outcome | Learning Experience | Approx. Time |
+       | ------ | ------------------ | ---------------- | ------------------- | ------------ |
+   ```
+4. `## Delivery considerations`: bullets on delivery mode, trainer-to-learner ratio, learner prior experience, setup and troubleshooting time, how questions are managed. Then `### Learner support` (link to `../assets/template-participant-discussion.docx`) and `### Trainer support` (link to `../assets/template-trainer-runsheet.docx`).
+
+**`environment.md`**
+
+1. Opening sentence, then the kinds of environment the materials can be adapted for (cloud VMs, institutional HPC, local installs, a preconfigured platform).
+2. `## Hardware requirements`: minimum resources **per learner** (CPU, RAM, disk) and the platforms it has been delivered on previously, with links.
+3. `## Software requirements` with `### Participants` (what learners install on their own computer) and `### Training environment` (what must be installed in the shared/remote environment, with minimum versions and links).
+4. `## Preconfigured set up`: link to `setup/README.md` on GitHub. If there is no `setup/` folder, say how the environment is obtained instead.
+5. `### Recommended pre-workshop checks`: a checklist of things a trainer verifies before the workshop starts (learners can connect, software reports the expected version, data is staged and readable, support channel is live, quotas resolved).
+
+**`materials.md`**
+
+1. Opening sentence.
+2. `## Workshop materials` with a `!!! note "Using these materials"` block that links to the learner site (`../workshop/index.md`) and to the "Using this template" section of the repository README.
+3. One paragraph describing how the parts progress, and one on the overall teaching aim and what is deliberately left out of scope.
+4. `## Trainer guidance`: how to keep the content connected to the learners' domain, with 2–4 emphasis bullets.
+5. `## Notes from previous trainers`: grid cards, one per part, linking to `ptN-guide.md`.
+
+### Per-part trainer guide (`docs/instructor/ptN-guide.md`)
+
+1. Opens with `!!! tip "Part N goals and scope"`: the key goals as bullets, then "What Part N is **not**:" as bullets. The "is not" list is mandatory — it is how a new trainer learns where to stop.
+2. One `## N.M <Lesson title>` per lesson, matching the learner lesson exactly. Each contains:
+   - A paragraph describing what the lesson does and where it sits in the progression ("In this lesson, you will…").
+   - "Your main aim is to ensure learners … You can do this by:" followed by concrete teaching moves as bullets (analogies, what to emphasise, what to demonstrate live, where to pause).
+   - `!!! warning "<title>"` for anything that commonly goes wrong in delivery or a deliberate design choice a trainer must not undo.
+   - `??? note "<question or topic>"` (collapsed) for anticipated learner questions, FAQs, and tangents, each with a short answer and an optional link.
+3. Lessons with nothing to add still get a heading with one sentence, so the numbering stays continuous.
+
+Written in second person addressed to the **trainer** ("you will introduce learners to…").
+
+### Learner home page (`docs/workshop/index.md`)
+
+H1 is the workshop name. In order:
+
+1. One paragraph: what learners will be able to do, how the content is split into parts, link to the schedule (`#workshop-schedule`).
+2. `## Trainers` and `## Facilitators`: left empty in the template, filled in per delivery.
+3. `## Prerequisites`: level (introductory/intermediate/advanced), who it is for, and assumed experience as bullets. Link to a prerequisite workshop if one exists.
+4. `## Set up requirements`: one line linking to `setup.md`.
+5. `## Code of Conduct`: the standard behaviour bullets and a link to the full code of conduct.
+6. `## Workshop schedule`: one `### Day N` (or `### Session N`) table per session (format below). Presenter column left empty in the template.
+7. `## Course survey`: one line with a `[course survey](link)` placeholder.
+8. `## Credits and acknowledgements`: developing organisation, enabling project and funder, compute provider, then "We gratefully acknowledge the contributions of …".
+
+### Lesson page (`docs/workshop/partN/NN_slug.md`)
+
+1. H1: `# N.M <Lesson title>`.
+2. `!!! info "Learning objectives"` immediately after the H1, as a **numbered** list of 3–6 objectives starting with a measurable verb (Describe, Explain, Apply, Implement, Run, Evaluate, Configure, Identify). Avoid "Understand" and "Know".
+3. One or two framing paragraphs: where the learner is now, what problem this lesson solves, what they will do.
+4. Numbered sections: `## N.M.1 <Section title>`, `## N.M.2 …`. Use un-numbered H3s for steps within a section.
+5. Exercises and solutions (see [Admonitions](#admonitions)), placed directly after the content they practise.
+6. Ends with `!!! abstract "Summary"`: "In this lesson you have learned:" followed by a numbered list that mirrors the learning objectives.
+
+Lesson `N.0` (part introduction) has the same shape, but its body introduces the scenario, data, and end goal of the part, often with a diagram. The outro lesson summarises the part and links forward to the next part or to further resources.
+
+Written in second person addressed to the **learner** ("you will…", "your pipeline…"). Use "we" only for shared activity in a live session ("Let's run this together").
+
+### Environment setup folder (`setup/`)
+
+`setup/README.md` is written for the trainer or system administrator who builds the environment:
+
+1. `# <SHORT_CODE>: Data and environment setup` and a one-paragraph purpose.
+2. `## Machine requirements`: OS and version, cores, memory, per learner.
+3. `## Software dependencies`: exact pinned versions, with a sentence explaining they are pinned for reproducibility.
+4. `## Installation and setup`: what `install.sh` does, in numbered order, then `### How to setup a new environment` with complete, runnable commands.
+5. How to validate the environment (e.g. a `validate_workshop.sh` that runs the lesson code end to end) and what success looks like (screenshot in `setup/img/`).
+
+Scripts are split into `install.sh` (entry point) and `lib/*.sh` (functions it sources).
+
+## Required table formats
+
+### Lesson plan table (`logistics.md`)
+
+One row per lesson. Bold the lesson number and short title. Times are in minutes, written `NN min`.
+
+```markdown
+| Lesson | Teaching Objective | Learning Outcome | Learning Experience | Approx. Time |
+| ------ | ------------------ | ---------------- | ------------------- | ------------ |
+| **1.3 Writing your first pipeline** | Introduce the minimum viable structure of a pipeline | Learners can identify and write a simple `process` and `workflow` | Guided code-along building a minimal pipeline step-by-step | 20 min |
+```
+
+- **Teaching Objective** — what the trainer sets out to do (trainer's perspective).
+- **Learning Outcome** — what the learner can do afterwards, starting "Learners can…" or "Learners understand…". Must be consistent with the lesson's learning objectives box.
+- **Learning Experience** — the teaching method: lecture, demonstration, code-along, guided exercise, independent exercise, discussion, poll.
+
+### Schedule table (`workshop/index.md`)
+
+```markdown
+|Time (AEST)|Activity                            |Presenter(s) |
+|-----------|------------------------------------|-------------|
+|13:00      |Arrival                             |             |
+|13:15      |Welcome and housekeeping            |             |
+|13:25      |Workshop: Part 1.0 - 1.4            |             |
+|14:30      |BREAK                               |             |
+```
+
+State the time zone in the header. Session time in the schedule must be consistent with the sum of the "Approx. Time" column in `logistics.md` plus housekeeping and breaks.
+
+### Glossary table (`workshop/resources.md`)
+
+```markdown
+| Term | Definition |
+|:---- |:---------- |
+| **Channels** | Asynchronous first-in, first-out (FIFO) queues used for communication between processes. |
+```
+
+Alphabetical. Bold the term; put code-like terms in backticks inside the bold (`` **`main.nf`** ``).
+
+## Admonitions
+
+Use MkDocs Material admonition syntax (not blockquote callouts). `!!!` is always open; `???` is collapsed. Always put a space after `!!!`/`???`, use a lowercase type, and quote the title. Indent the body four spaces.
+
+| Purpose | Syntax | Where |
+|---------|--------|-------|
+| Learning objectives | `!!! info "Learning objectives"` | Top of every lesson |
+| Exercise | `!!! question "Exercise"` | After the content it practises |
+| Solution | `??? success "Solution"` | Directly after its exercise, collapsed |
+| Hint | `??? tip "Hint"` | Inside or after an exercise, collapsed |
+| Poll / check-in | `!!! abstract "Poll"` | Live-session checkpoints |
+| Lesson summary | `!!! abstract "Summary"` | End of every lesson |
+| Important caution | `!!! warning "<title>"` | Anything that loses work or breaks the environment |
+| Background / aside | `!!! note "<title>"` | Short context that is useful but not essential |
+| Optional depth | `??? example "Advanced content"` | Material faster learners can explore; never required by later lessons |
+| Trainer FAQ | `??? note "<question>"` | `instructor/ptN-guide.md` only |
+| Part goals | `!!! tip "Part N goals and scope"` | Top of each `instructor/ptN-guide.md` |
+
+Example:
+
+```markdown
+!!! question "Exercise"
+
+    Add a `tag` directive to the `FASTQC` process so each task is labelled with its sample ID.
+
+??? success "Solution"
+
+    ```groovy
+    process FASTQC {
+        tag "${sample_id}"
+        ...
+    }
+    ```
+```
+
+### Platform tabs
+
+When learners work on more than one platform (e.g. two HPC systems, or Windows/macOS/Linux setup), show platform-specific commands as linked content tabs rather than separate pages. With `content.tabs.link` enabled, choosing a tab once switches every tab set on the page.
+
+```markdown
+=== "Gadi"
+
+    ```bash
+    qsub run.pbs.sh
+    ```
+
+=== "Setonix"
+
+    ```bash
+    sbatch run.slurm.sh
+    ```
+```
+
+Keep tab labels identical (same spelling and order) across every page. Introduce the tab convention once, in the first lesson that uses it.
+
+## Writing style
+
+- Second person throughout. On learner pages "you" is the learner; on instructor pages "you" is the trainer. Never mix the two on one page.
+- Steps are imperative: "Open the terminal", "Run the following command".
+- Every code block has a language identifier: ` ```bash `, ` ```console `, ` ```groovy `, ` ```python `, ` ```yaml `, ` ```text `. Use ` ```console title="Output" ` for expected output.
+- Show the expected output after every command a learner runs, so they can check their result.
+- Commands, file names, directory names, parameters, and code identifiers are in backticks.
+- Australian English spelling (organise, behaviour, licence as a noun).
+- Figures: `![<alt text describing the figure>](img/<name>.png)`. Every figure has alt text. Keep the editable source next to the image.
+- Tie technical content back to the learners' domain (e.g. the biology) at least once per lesson.
+- Lesson and part titles are sentence case.
+
+## Template automation
+
+`cookiecutter.json`:
+
+```json
+{
+  "repo_name": "<short-code>-workshop",
+  "site_name": "<Workshop name>",
+  "github_username": "Sydney-Informatics-Hub"
+}
+```
+
+`.github/workflows/template.yml` runs only in copies made with "Use this template" (guarded by `if: github.repository != '<org>/<package>-materials'`), only once (guarded by a `.template-applied` marker file), and then deletes itself. It:
+
+1. Replaces `{{cookiecutter.repo_name}}`, `{{cookiecutter.github_username}}`, and `{{cookiecutter.site_name}}` in every `.md` and `.yml` file.
+2. Removes trainer-only content: `docs/instructor/`, `setup/`, `CONTRIBUTING.md`, `CITATION.cff`, and the nav lines between `# INSTRUCTOR_START` and `# INSTRUCTOR_END`.
+3. Replaces `docs/index.md` (the trainer home page, which links to the deleted instructor pages) with the learner home page, so the published site opens on learner content.
+4. Commits, pushes to `main`, and deletes `template.yml`.
+
+Reference implementation of steps 1, 2 and 4: https://github.com/Sydney-Informatics-Hub/nf4ls-materials/blob/main/.github/workflows/template.yml. Step 3 is an addition to that reference; when you add it, rewrite the relative links in the copied page (`setup.md` → `workshop/setup.md`, etc.) or keep `docs/index.md` as a short redirect page to `workshop/index.md`.
+
+Placeholders use the literal `{{cookiecutter.<key>}}` form and are only valid in `.md` and `.yml` files (the substitution step only touches those).
+
+## Contributor and citation metadata
+
+Keep these consistent with each other: `CITATION.cff` authors, `.zenodo.json` creators, `AUTHORS`, the citation block on `docs/index.md`, and the README acknowledgements. Every author has an ORCID in `CITATION.cff` and `.zenodo.json`.
+
+`.zenodo.json` description paragraphs, in order: what the package is; what the subject is; how the parts are structured; `Format:` (original delivery length and supported modes); `Target audience:`; `Prerequisites:`; `Learning outcomes:` (one sentence listing them); `Contact:`.
+
+## Migrating existing materials into this structure
+
+Most packages start from an earlier delivered workshop site. When restructuring existing materials:
+
+1. **Inventory first.** List every existing page and image, and map each to its destination path in the structure above before moving anything. Present the mapping as a table: `Source path | Destination path | Action (move / split / merge / rewrite / drop)`.
+2. **Separate the audiences.** Any trainer notes embedded in learner pages (comments, "Note for instructors", TODOs, `<!-- -->` blocks) move to the matching `## N.M` section of `instructor/ptN-guide.md`.
+3. **Renumber consistently.** Rename files to `NN_slug.md` with a zero-padded lesson number that matches the H1 and nav label. Fix nav entries that point to files that do not exist.
+4. **Normalise admonitions.** Convert every exercise, solution, hint, and summary variant (e.g. `!!!question`, `???Solution`, `??? "Solution"`, `??? note "Solution"`) to the forms in the [Admonitions](#admonitions) table.
+5. **Do not invent missing content.** Lessons that are stubs stay stubs, with a visible placeholder (see below) — do not fill a lesson body from general knowledge without the trainer asking.
+6. **Separate data from docs.** Small learner files go under `docs/workshop/partN/materials/`. Large datasets and data-preparation scripts go under `setup/` (or stay in an external data repository linked from `setup/README.md`).
+7. **Preserve history.** Use `git mv` rather than delete-and-recreate, so file history is kept.
+
+## AI assistant guidance for training package developers
+
+When helping a trainer build or restructure a training package, you should:
+
+1. **Ask for the inputs before writing.** You need the filled-in `TRAINING_CONTEXT.md` and, when migrating, the existing `mkdocs.yml` and a file listing of the source materials. If they are not provided, say which sections you cannot complete.
+
+2. **Generate the skeleton first.** Before any prose, produce (a) the folder tree with every lesson file named, (b) the `nav` block of `mkdocs.yml`, and (c) the lesson plan table for each part. These three must agree with each other. Ask the trainer to confirm them before continuing.
+
+3. **Work one page at a time**, in this order: lesson plan tables → learner home → lesson pages (part by part) → per-part trainer guides → `environment.md` → `materials.md` → trainer home → `setup/README.md` → metadata files.
+
+4. **Derive, do not invent.** Lesson titles, timings, learning outcomes, software versions, hardware requirements, and platform names come from the trainer or the source materials. If something is missing, insert a placeholder in this exact format:
+   ```
+   [LESSON TIMING: TRAINER TO SUPPLY - minutes for lesson 2.3]
+   ```
+
+5. **Never invent DOIs, ORCIDs, author lists, funding statements, previous-iteration URLs, survey links, or software versions.** Insert a clearly labelled placeholder instead:
+   ```
+   [Zenodo DOI: TRAINER TO SUPPLY - minted after first release]
+   ```
+
+6. **Keep the two audiences apart.** Never put trainer-only notes in a `docs/workshop/` page. If the trainer gives you a teaching tip while you are drafting a lesson, put it in the matching section of `instructor/ptN-guide.md` and say that you have done so.
+
+7. **Keep lesson numbering identical** across the file name, H1, nav label, logistics row, and trainer-guide heading. After any change to the lesson list, re-check all five.
+
+8. **Check objectives against outcomes.** Each lesson's `Learning objectives` box, its `Summary` box, and its "Learning Outcome" cell in the logistics table must describe the same thing.
+
+9. **Do not assume the subject.** This structure is used for any training topic. Only use subject-specific terminology (e.g. Nextflow processes, HPC schedulers) when the context file says the workshop is about it.
+
+10. **Suggest figures.** Where a concept is spatial or flow-based, insert a figure placeholder with a description of what to draw:
+    ```
+    ![FIGURE: TRAINER TO SUPPLY - diagram showing the login node, scheduler, and compute nodes, with an arrow for a job submission](img/hpc_architecture.png)
+    ```
+
+11. **Write directly in Markdown** in the repository paths above. Do not produce content in Google Docs, Word, or another word-processor format (the downloadable `.docx` templates in `docs/assets/` are the only exception).
+
+### Closing checklist
+
+At the end of any session, review the package against this list and report anything missing or incomplete:
+
+**Structure**
+- [ ] Every required path in the repository structure table exists (optional paths either exist or are justifiably absent)
+- [ ] Learner content is only under `docs/workshop/`; trainer content is only in `docs/index.md`, `docs/instructor/`, and `setup/`
+- [ ] No duplicate learner setup page at `docs/setup.md`
+- [ ] Every `.md` file under `docs/` is in `nav`, and every `nav` entry points to a file that exists
+- [ ] Instructor nav is wrapped in `# INSTRUCTOR_START` / `# INSTRUCTOR_END`
+- [ ] `cookiecutter.json` is valid JSON and contains `repo_name`, `site_name`, `github_username`
+- [ ] `template.yml` guard condition names this repository, and the strip step removes trainer-only paths
+
+**Lessons**
+- [ ] Lesson numbers match across file name, H1, nav label, logistics row, and trainer-guide heading
+- [ ] Every lesson opens with a numbered `Learning objectives` box using measurable verbs
+- [ ] Every lesson ends with a `Summary` box that mirrors its objectives
+- [ ] Every exercise is `!!! question "Exercise"` and has a `??? success "Solution"` directly after it
+- [ ] Every command learners run is followed by its expected output
+- [ ] Platform-specific commands use linked tabs with consistent labels
+- [ ] All code blocks have a language identifier
+- [ ] Every figure has alt text and an editable source file alongside it
+
+**Instructor pages**
+- [ ] `logistics.md` has one tab and one lesson plan table per part, with all five columns filled
+- [ ] Sum of lesson times fits the sessions in the learner schedule
+- [ ] Every `ptN-guide.md` opens with goals and an explicit "is **not**" list
+- [ ] Every lesson has a matching `## N.M` section in its trainer guide
+- [ ] `environment.md` states per-learner hardware, participant software, environment software with versions, and pre-workshop checks
+- [ ] Every file in `docs/assets/` is linked from an instructor page
+
+**Learner pages**
+- [ ] `workshop/index.md` has all eight sections in order
+- [ ] `workshop/setup.md` has numbered steps with a screenshot per step
+- [ ] `workshop/resources.md` glossary covers the terms defined in the lessons
+
+**Metadata**
+- [ ] `CITATION.cff`, `.zenodo.json`, `AUTHORS`, the trainer home citation, and README acknowledgements list the same people
+- [ ] Every author has an ORCID
+- [ ] Licence is CC BY 4.0 and named consistently
+- [ ] Repository `README.md` explains "Use this template", what the copy contains, and how to enable GitHub Pages
+- [ ] No placeholders remain for DOIs, ORCIDs, versions, timings, or URLs — or each remaining one is listed for the trainer to resolve
+
+## Related repositories and resources
+
+- Reference package: https://github.com/Sydney-Informatics-Hub/nf4ls-materials
+- MkDocs Material reference (admonitions, tabs, grids): https://squidfunk.github.io/mkdocs-material/reference/
+- Australian BioCommons Code of Conduct: https://zenodo.org/records/4276854
+- The Carpentries Instructor Training (lesson design background): https://carpentries.github.io/instructor-training/
+- Citation File Format: https://citation-file-format.github.io/
+- Zenodo GitHub integration: https://docs.github.com/en/repositories/archiving-a-github-repository/referencing-and-citing-content
+- TeSS training registry (for listing delivered events): https://tess.elixir-europe.org/
