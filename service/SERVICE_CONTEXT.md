@@ -9,19 +9,38 @@ and the closer the first draft will be to the BioCommons template conventions.
 1. Fill in the fields below (leave any unknowns as `Unknown`)
 2. Open a new conversation with your AI assistant (Claude, Copilot, etc.)
 3. Paste the full contents of `llms.txt` and say:
-   > "I'm writing an Australian BioCommons how-to guide. Use the conventions in the above file for
-   > everything you help me produce."
+
+```
+I'm writing an Australian BioCommons How-to Guide for a service. 
+Use the conventions in the above file for everything you help me produce.
+```
+
 4. Paste the full contents of this filled-in file and say:
-   > "Here is the context for the specific guide I'm writing today."
+
+```
+Here is the context for the specific guide I'm writing today.
+```
 5. Ask the AI to confirm it has understood both files before you start
-6. Begin with: "Generate the Quick Start checklist and workflow summary table first,
-   before any prose."
-7. At the end of your session, ask: "Run the closing checklist from the BioCommons
-   llms.txt against the guide we've written and tell me what's missing or incomplete."
+6. Begin with: 
+
+```
+Generate the Quick Start checklist and workflow summary table first,
+before any prose.
+```
+
+7. At the end of your session, ask: 
+
+```
+Run the closing checklist from the BioCommons llms.txt against the guide 
+we've written and tell me what's missing or incomplete.
+```
 
 ---
 
-## 1. Guide identity
+## Template to complete
+
+
+### 1. Guide identity
 
 **Guide title:**
 <!-- A working title is fine — it can change. -->
@@ -55,7 +74,7 @@ and the closer the first draft will be to the BioCommons template conventions.
 
 ---
 
-## 2. Audience
+### 2. Audience
 
 **Who is this guide for?**
 <!-- Describe the intended reader. Be specific — this affects tone, assumed knowledge, and
@@ -75,7 +94,7 @@ and the closer the first draft will be to the BioCommons template conventions.
 
 ---
 
-## 3. Scope
+### 3. Scope
 
 **What this guide covers:**
 <!-- Bullet list of the main tasks the guide will walk through -->
@@ -99,7 +118,7 @@ and the closer the first draft will be to the BioCommons template conventions.
 
 ---
 
-## 4. Registry metadata
+### 4. Registry metadata
 
 Fill in what you have. For anything not yet available, write `Not yet known` — the AI will
 insert a clearly labelled placeholder and remind you to supply the real value before publishing.
@@ -135,7 +154,7 @@ insert a clearly labelled placeholder and remind you to supply the real value be
 
 ---
 
-## 5. People
+### 5. People
 
 **Authors:**
 <!-- Add a row for each author. GitHub handle and ORCID are used in CONTRIBUTORS.yml -->
@@ -156,7 +175,7 @@ insert a clearly labelled placeholder and remind you to supply the real value be
 
 ---
 
-## 6. Related resources
+### 6. Related resources
 
 **Related guides already on the How-to Hub:**
 <!-- Links to existing guides the reader might need before or after this one -->
@@ -180,7 +199,7 @@ insert a clearly labelled placeholder and remind you to supply the real value be
 
 ---
 
-## 7. Known constraints or special requirements
+### 7. Known constraints or special requirements
 
 **Are there any known technical gotchas for this tool/platform combination?**
 <!-- Example: "AlphaFold2 databases are very large and must be pre-staged on Gadi before
@@ -196,7 +215,7 @@ insert a clearly labelled placeholder and remind you to supply the real value be
 
 ---
 
-## 8. Session goals
+### 8. Session goals
 
 **What do you want to have produced by the end of this session?**
 <!-- Check all that apply -->
