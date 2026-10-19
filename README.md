@@ -45,7 +45,7 @@ session, and see [TESTING.md](./TESTING.md) for how to evaluate the output.
 
 ---
 
-## `workflow/` — Nextflow workflow documentation
+## `nextflow_workflow/` — Nextflow workflow documentation
 
 | File | What it is | How to use it |
 |------|-----------|---------------|
