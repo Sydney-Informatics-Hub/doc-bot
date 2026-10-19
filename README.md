@@ -11,7 +11,7 @@ section by section, run a closing checklist).
 | I'm writing... | Use folder | Target output |
 |---|---|---|
 | A BioCommons how-to guide for a service (e.g. BioShell) | [`service/`](./service) | A guide repo built from the [BioCommons guide template](https://australianbiocommons.github.io/how-to-guide-template/) |
-| A README for a Nextflow workflow built from the SIH template | [`workflow/`](./workflow) | The workflow's own `README.md` |
+| A README for a Nextflow workflow built from the SIH template | [`workflow/`](nextflow_workflow) | The workflow's own `README.md` |
 | A reusable workshop/training package (trainer guides + learner site) | [`training/`](./training) | A MkDocs template repo structured like [nf4ls-materials](https://github.com/Sydney-Informatics-Hub/nf4ls-materials) |
 
 ---
@@ -45,11 +45,11 @@ session, and see [TESTING.md](./TESTING.md) for how to evaluate the output.
 
 ---
 
-## `workflow/` — Nextflow workflow documentation
+## `nextflow_workflow/` — Nextflow workflow documentation
 
 | File | What it is | How to use it |
 |------|-----------|---------------|
-| [`workflow/llm.txt`](./workflow/llm.txt) | Conventions for documenting a Nextflow workflow built from the [Sydney Informatics Hub template](https://github.com/Sydney-Informatics-Hub/template-nf), using the [Australian BioCommons workflow documentation guidelines](https://github.com/AustralianBioCommons/doc_guidelines/blob/master/documentation_templates/workflows.md) — README section order, required table formats, Nextflow-specific gotchas (`-` vs `--`, profiles, samplesheet schema), and a closing checklist | Paste into the AI as the first message of every session |
+| [`workflow/llm.txt`](nextflow_workflow/llm.txt) | Conventions for documenting a Nextflow workflow built from the [Sydney Informatics Hub template](https://github.com/Sydney-Informatics-Hub/template-nf), using the [Australian BioCommons workflow documentation guidelines](https://github.com/AustralianBioCommons/doc_guidelines/blob/master/documentation_templates/workflows.md) — README section order, required table formats, Nextflow-specific gotchas (`-` vs `--`, profiles, samplesheet schema), and a closing checklist | Paste into the AI as the first message of every session |
 
 There is no context form to fill in for this pack. Instead of a template, you give the AI the workflow's source files so the documentation is derived from the code. Provide `main.nf`, 
 `nextflow.config`, `nextflow_schema.json`, `assets/schema_input.json`, `config/modules.config`, and the contents of `modules/`.
