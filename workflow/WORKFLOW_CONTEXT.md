@@ -1,4 +1,4 @@
-# Guide Authoring Context Template
+# Workflow Guide Authoring Context Template
 
 Use this file to set up an AI-assisted guide writing session. Fill in as many fields as you
 can before starting, the more context you provide upfront, the less the AI will need to ask,
@@ -11,7 +11,7 @@ and the closer the first draft will be to the BioCommons template conventions.
 3. Paste the full contents of `llms.txt` and say:
 
 ```
-I'm writing an Australian BioCommons How-to Guide for a service. 
+I'm writing an Australian BioCommons How-to Guide for a computational workflow. 
 Use the conventions in the above file for everything you help me produce.
 ```
 
@@ -97,7 +97,7 @@ we've written and tell me what's missing or incomplete.
 ### 3. Scope
 
 **What this guide covers:**
-<!-- Bullet list of the main tasks the guide will walk through -->
+<!-- Bullet list of the main workflow tasks the guide will walk through -->
 <!--
 - Task 1
 - Task 2
